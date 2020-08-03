@@ -355,7 +355,7 @@ int main(int argc, char *argv[])
 				 * dereferences to avoid multiple iterations
 				 * from overlapping.
 				 */
-				if (size < 16*1024)
+				if (size <= 32*1024)
 					skip = 8;
 				else
 					skip = cacheline_size;
