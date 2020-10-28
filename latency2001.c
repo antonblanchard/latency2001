@@ -246,7 +246,7 @@ static void usage(void)
 	printf("\t-T\t\t\tTLB test\n");
 	printf("\t-S\t\t\tSequential test\n");
 #ifdef __powerpc__
-	printf("\t-p\t\t\tDon't disable prefetch via DSCR\n");
+	printf("\t-d <dscr>\t\t\tSet DSCR, defaults to 1\n");
 #endif
 	printf("\t-s <stride>\t\tstride size\n");
 	printf("\t-e\t\t\ttouch end of cachelines\n\n");
@@ -264,12 +264,12 @@ int main(int argc, char *argv[])
 	bool end = false;
 	enum type type = LFSR;
 	bool verbose = false;
-	bool prefetch = false;
+	int dscr = -1;
 	char *c;
 	unsigned long pagesize = getpagesize();
 
 	while (1) {
-		signed char c = getopt(argc, argv, "a:c:Clt:TSs:evph");
+		signed char c = getopt(argc, argv, "a:c:Clt:TSs:evd:h");
 		if (c < 0)
 			break;
 
@@ -316,8 +316,8 @@ int main(int argc, char *argv[])
 				break;
 
 #ifdef __powerpc__
-			case 'p':
-				prefetch = true;
+			case 'd':
+				dscr = atoi(optarg);
 				break;
 #endif
 
@@ -339,8 +339,8 @@ int main(int argc, char *argv[])
 		printf("size,cycles,ns\n");
 
 #ifdef __powerpc__
-	if (!prefetch)
-		set_dscr(1);
+	if (dscr != -1)
+		set_dscr(descr);
 #endif
 
 	while ((argc - optind) > 0) {
