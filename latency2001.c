@@ -207,34 +207,6 @@ static void doit(unsigned long size, unsigned long skip, enum type type,
 	signal(SIGALRM, SIG_DFL);
 }
 
-void *alloc_small_mem(size_t size)
-{
-	void *addr;
-	unsigned long length;
-
-        length = ALIGN_UP(size, getpagesize());
-
-        addr = mmap(NULL, length, PROT_READ|PROT_WRITE,
-                    MAP_PRIVATE|MAP_ANONYMOUS, 0, 0);
-
-        if (addr == MAP_FAILED) {
-                perror("mmap");
-                exit(1);
-        }
-
-	if (madvise(addr, length, MADV_NOHUGEPAGE)) {
-                perror("madvise(MADV_NOHUGEPAGE)");
-                exit(1);
-	}
-
-	return addr;
-}
-
-void free_small_mem(void *addr, size_t size)
-{
-	munmap(addr, size);
-}
-
 static void usage(void)
 {
 	printf("latency2001 [opts] <size>\n\n");
